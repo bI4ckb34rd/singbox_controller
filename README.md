@@ -49,6 +49,16 @@ A new icon will appear in your system tray. Right-click it to access the control
 
 -----
 
+## 🖥️ Web UI Dashboard
+
+To access the sing-box dashboard:
+
+1.  Open your web browser and navigate to `http://127.0.0.1:9090`.
+2.  In the **Endpoint URL** section, enter `http://127.0.0.1:9090`.
+3.  Click **"Add"** to connect to the dashboard.
+
+-----
+
 ## 📸 Screenshots
 
 | Main Window | Tray Menu |

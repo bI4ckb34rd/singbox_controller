@@ -224,7 +224,7 @@ function Stop-ProcessByName {
                 Write-AppLog "Attempting graceful shutdown of $ProcessName (PID: $($proc.Id))" -Level 'INFO'
 
                 if (Send-CtrlC $proc.Id) {
-                    if (-not $proc.WaitForExit(5000)) {
+                    if (-not $proc.WaitForExit(10000)) {
                         Write-AppLog "Graceful shutdown failed, force killing $ProcessName (PID: $($proc.Id))" -Level 'WARNING'
                         $proc.Kill()
                         $proc.WaitForExit(2000)
