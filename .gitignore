@@ -1,0 +1,9 @@
+# Ignore all files in these directories
+config/*
+core/*
+logs/*
+
+# But keep the .gitkeep files
+!config/.gitkeep
+!core/.gitkeep
+!logs/.gitkeep
