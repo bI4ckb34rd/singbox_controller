@@ -176,39 +176,60 @@ function Send-CtrlC {
 using System;
 using System.Runtime.InteropServices;
 
-public static class CtrlC {
+public static class ConsoleManager {
     [DllImport("kernel32.dll", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
     public static extern bool GenerateConsoleCtrlEvent(uint dwCtrlEvent, uint dwProcessGroupId);
 
     [DllImport("kernel32.dll", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
     public static extern bool AttachConsole(uint dwProcessId);
 
     [DllImport("kernel32.dll", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
     public static extern bool FreeConsole();
 
     [DllImport("kernel32.dll", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
     public static extern bool SetConsoleCtrlHandler(IntPtr handler, bool add);
 }
 "@
 
     try {
         Add-Type $signature -ErrorAction SilentlyContinue
+    }
+    catch {
+        # Type might already be loaded. We can ignore this specific error.
+    }
 
-        [CtrlC]::AttachConsole($ProcessId) | Out-Null
-        [CtrlC]::SetConsoleCtrlHandler([IntPtr]::Zero, $true) | Out-Null
+    [ConsoleManager]::FreeConsole() | Out-Null
 
-        [CtrlC]::GenerateConsoleCtrlEvent(0, 0) | Out-Null
+    if (-not [ConsoleManager]::AttachConsole($ProcessId)) {
+        $errorCode = [System.Runtime.InteropServices.Marshal]::GetLastWin32Error()
+        Write-AppLog "Failed to attach to console of PID $ProcessId. Win32 Error Code: $errorCode." -Level 'WARNING'
+        return $false
+    }
 
-        Start-Sleep -Milliseconds 1000
+    try {
+        if (-not [ConsoleManager]::SetConsoleCtrlHandler([IntPtr]::Zero, $true)) {
+            $errorCode = [System.Runtime.InteropServices.Marshal]::GetLastWin32Error()
+            Write-AppLog "Failed to set console control handler for PID $ProcessId. Win32 Error Code: $errorCode." -Level 'WARNING'
+            return $false
+        }
 
-        [CtrlC]::FreeConsole() | Out-Null
-        [CtrlC]::SetConsoleCtrlHandler([IntPtr]::Zero, $false) | Out-Null
+        if (-not [ConsoleManager]::GenerateConsoleCtrlEvent(0, 0)) {
+            $errorCode = [System.Runtime.InteropServices.Marshal]::GetLastWin32Error()
+            Write-AppLog "Failed to generate CTRL+C event for PID $ProcessId. Win32 Error Code: $errorCode." -Level 'WARNING'
+            return $false
+        }
+
+        Start-Sleep -Milliseconds 500
 
         return $true
     }
-    catch {
-        Write-AppLog "Failed to send CTRL+C to process $ProcessId`: $($_.Exception.Message)" -Level 'WARNING'
-        return $false
+    finally {
+        [ConsoleManager]::SetConsoleCtrlHandler([IntPtr]::Zero, $false) | Out-Null
+        [ConsoleManager]::FreeConsole() | Out-Null
     }
 }
 
