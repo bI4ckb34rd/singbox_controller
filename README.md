@@ -51,11 +51,24 @@ A new icon will appear in your system tray. Right-click it to access the control
 
 ## 🖥️ Web UI Dashboard
 
-To access the sing-box dashboard:
+This script automatically downloads and configures the [MetaCubeXd](https://github.com/MetaCubeX/metacubexd) dashboard when you import a configuration from a URL.
 
-1.  Open your web browser and navigate to `http://127.0.0.1:9090`.
-2.  In the **Endpoint URL** section, enter `http://127.0.0.1:9090`.
-3.  Click **"Add"** to connect to the dashboard.
+### First-Time Setup
+
+The very first time you access the dashboard, you need to connect it to the sing-box API.
+
+1.  Open your web browser and navigate to **[http://127.0.0.1:9090](http://127.0.0.1:9090)**.
+2.  You will see a setup screen with an "Endpoint URL" field.
+3.  Enter `http://127.0.0.1:9090` into the **Endpoint URL** field.
+4.  Click the **"Add"** button.
+
+The dashboard will now load and is ready to use. You will not need to repeat this step again.
+
+### Accessing the Dashboard
+
+After the one-time setup, you can access your dashboard directly by visiting:
+
+**[http://127.0.0.1:9090](http://127.0.0.1:9090)**
 
 -----
 
